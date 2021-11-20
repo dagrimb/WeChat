@@ -1,3 +1,5 @@
+// The Start component renders the home screen
+
 import React from 'react';
 import { 
   ImageBackground, // import to use desired backgound on start screen
@@ -39,24 +41,28 @@ export default class Start extends React.Component {
   render() {
     if (this.state.fontsLoaded) {
       return (
-        <View style={{ flex: 1, color: 'black', fontWeight: 'bold', fontSize: 10  }}> {/* Element/styles for component's main-container */}
+        /* Element/styles for component's main-container */
+        <View style={{ flex: 1, color: 'black', fontWeight: 'bold', fontSize: 10  }}> 
           <ImageBackground //Element for component's background
             source={require('../img/BackgroundImage.png')} 
             resizeMode="cover"
             style={{ flex: 1 /*justifyContent: 'space-evenly'*/}}
           >
-          <Text // Application main title
+          {/* Application main title */}  
+          <Text 
             style={{ fontSize: 45, fontWeight: '600', color: '#FFFFFF', textAlign: 'center', fontFamily: 'Poppins-Black', marginTop: 70}} 
           >
             WeChat
           </Text>
-          <KeyboardAvoidingView // see import above for description
+          {/* see import above for description */}
+          <KeyboardAvoidingView 
             style={{ backgroundColor: '#FFFFFF', height: '20%', width: '90%', alignSelf: 'center', marginTop: 175, flex: 1, 
             justifyContent: 'space-evenly', padding: 15, marginBottom: 30}} 
             behavior={Platform.OS === "ios" ? "padding" : "height"}
           >
             {/*<TouchableWithoutFeedback onPress={Keyboard.dismiss}>*/}
-            <View style={{ borderWidth: 1, padding: 10 }}> {/* Container for white box with TextInput/color pallet/nav button */}
+            {/* Container for white box with TextInput/color pallet/nav button */}
+            <View style={{ borderWidth: 1, padding: 10 }}> 
               <Image
                 source={require('../img/icon.png')} 
                 style={{ position: 'absolute', opacity: 0.5, marginLeft: 15, marginTop: 15 }}  

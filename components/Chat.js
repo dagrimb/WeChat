@@ -1,3 +1,5 @@
+// The Chat component renders the UI for the chat screen 
+
 import React, { Component } from 'react';
 import { View, Text } from 'react-native';
 
