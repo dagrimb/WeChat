@@ -12,9 +12,13 @@ export default class Chat extends React.Component {
     };
   }
 
-  render() {
+  componentDidMount() {
     let name = this.props.route.params.name; // set name var to name state object sent from Start component
     this.props.navigation.setOptions({ title: name }); // set navigation title to user name
+  }
+
+  render() {
+    let name = this.props.route.params.name; // set name var to name state object sent from Start component
     let backgroundColor = this.props.route.params.backgroundColor; // set backgroundColor var to backgroundColor state object sent from Start component
 
     return (
