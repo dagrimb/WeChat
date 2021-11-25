@@ -2,7 +2,7 @@
 
 import React, { Component } from 'react';
 import { View, Text, KeyboardAvoidingView } from 'react-native';
-import { Bubble, GiftedChat } from 'react-native-gifted-chat'; // import GiftedChat library
+import { Bubble, GiftedChat } from 'react-native-gifted-chat'; // import Bubble component and GiftedChat library
 
 
 export default class Chat extends React.Component {
@@ -10,7 +10,7 @@ export default class Chat extends React.Component {
     super();
     this.state = { // initialize state within constructor
       title: '',
-      messages: []
+      messages: [] // empty array for storing both static and user generated messages
     };
   }
 
@@ -19,22 +19,77 @@ export default class Chat extends React.Component {
     this.props.navigation.setOptions({ title: name }); // set navigation title to user name
     this.setState( {
       messages: [ // set the state of "messages" with static message
-        {
+  
+      {
+        _id: 8,
+        text: `${name} has entered the chat`,
+        createdAt: new Date(),
+        system: true,
+      },
+      
+      {
+        _id: 7,
+        text: `${name} and Alan have left the chat`,
+        createdAt: new Date(),
+        system: true,
+      },
+
+      {
+        _id: 6,
+        text: 'Sounds great. See you then.',
+        createdAt: new Date(),
+        user: {
           _id: 1,
+            name: 'David',
+            avatar: 'http://placeimg.com/140/140/any',
+        },
+      },
+      {
+        _id: 5,
+        text: 'Good. Was going to grab a bite to eat and see that new movie at 6:30.',
+        createdAt: new Date(),
+        user: {
+          _id: 2,
+            name: 'Alan',
+            avatar: 'http://placeimg.com/140/140/any',
+        },
+      },
+
+      {
+        _id: 4,
+        text: 'Hey. Not much. How have you been?',
+        createdAt: new Date(),
+        user: {
+          _id: 1,
+            name: 'David',
+            avatar: 'http://placeimg.com/140/140/any',
+        },
+      },
+
+      {
+          _id: 3,
           text: `${name} has entered the chat`,
           createdAt: new Date(),
           system: true,
         },
+        
         {
           _id: 2,
-          text: 'Hello developer',
+          text: 'Hey, whats up?',
           createdAt: new Date(),
           user: {
             _id: 2,
-              name: 'React Native',
+              name: 'Alan',
               avatar: 'http://placeimg.com/140/140/any',
           },
         },
+        {
+          _id: 1,
+          text: `Alan has entered the chat`,
+          createdAt: new Date(),
+          system: true,
+        },
+
       ],
     });
   }
@@ -45,13 +100,17 @@ export default class Chat extends React.Component {
     }));
   }
 
+  // ensure that user's message will be displayed in bubble of a certain color
   renderBubble(props) {
     return (
       <Bubble
-        {...props}
+        {...props} // inherit props
         wrapperStyle={{
           right: {
             backgroundColor: '#000'
+          },
+          left: {
+            backgroundColor: '#FF0000',
           }
         }}
       />
@@ -59,19 +118,17 @@ export default class Chat extends React.Component {
   }
   
   render() { // code for rendering chat UI
-    let name = this.props.route.params.name; // set name var to name state object sent from Start component
     let backgroundColor = this.props.route.params.backgroundColor; // set backgroundColor var to backgroundColor state object sent from Start component
 
     return (    
       <View
-        style={{ flex: 1}}
-      > 
+        style={{ flex: 1, backgroundColor: backgroundColor}}> 
         <GiftedChat
           renderBubble={this.renderBubble.bind(this)}
           messages={this.state.messages}
           onSend={messages => this.onSend(messages)}
           user={{
-            _id: 1,
+            _id: 1
           }}
         />
       {/* Add component if device is an Android */}

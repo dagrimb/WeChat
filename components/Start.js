@@ -113,7 +113,7 @@ export default class Start extends React.Component {
                 Start Chatting
               </Text>
             </TouchableOpacity>
-          {/*</TouchableWithoutFeedback>*/}
+
           </KeyboardAvoidingView>
         </ImageBackground>
       </View>  
