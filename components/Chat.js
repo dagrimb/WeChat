@@ -5,6 +5,74 @@ import { View, Text, KeyboardAvoidingView } from 'react-native';
 import { Bubble, GiftedChat } from 'react-native-gifted-chat'; // import Bubble component and GiftedChat library
 
 
+const messages = [ // set the state of "messages" with static message
+
+  {
+    _id: 8,
+    text: 'David has entered the chat',
+    createdAt: new Date(),
+    system: true,
+  },
+  {
+    _id: 7,
+    text: 'David and Alan have left the chat',
+    createdAt: new Date(),
+    system: true,
+  },
+  {
+    _id: 6,
+    text: 'Sounds great. See you then.',
+    createdAt: new Date(),
+    user: {
+      _id: 1,
+        name: 'David',
+        avatar: 'http://placeimg.com/140/140/any',
+    },
+  },
+  {
+    _id: 5,
+    text: 'Good. Was going to grab a bite to eat and see that new movie at 9:45.',
+    createdAt: new Date(),
+    user: {
+      _id: 2,
+        name: 'Alan',
+        avatar: 'http://placeimg.com/140/140/any',
+    },
+  },
+  {
+    _id: 4,
+    text: 'Hey. Not much. How have you been?',
+    createdAt: new Date(),
+    user: {
+      _id: 1,
+        name: 'David',
+        avatar: 'http://placeimg.com/140/140/any',
+    },
+  },
+  {
+      _id: 3,
+      text: 'David has entered the chat',
+      createdAt: new Date(),
+      system: true,
+    },
+    {
+      _id: 2,
+      text: 'Hey, whats up?',
+      createdAt: new Date(),
+      user: {
+        _id: 2,
+          name: 'Alan',
+          avatar: 'http://placeimg.com/140/140/any',
+      },
+    },
+    {
+      _id: 1,
+      text: `Alan has entered the chat`,
+      createdAt: new Date(),
+      system: true,
+    },
+  ]
+
 export default class Chat extends React.Component {
   constructor() { 
     super();
@@ -15,82 +83,10 @@ export default class Chat extends React.Component {
   }
 
   componentDidMount() { // called right after component mounts
-    let name = this.props.route.params.name; // set name var to name state object sent from Start component
+    const name = this.props.route.params.name; // set name var to name state object sent from Start component
     this.props.navigation.setOptions({ title: name }); // set navigation title to user name
     this.setState( {
-      messages: [ // set the state of "messages" with static message
-  
-      {
-        _id: 8,
-        text: `${name} has entered the chat`,
-        createdAt: new Date(),
-        system: true,
-      },
-      
-      {
-        _id: 7,
-        text: `${name} and Alan have left the chat`,
-        createdAt: new Date(),
-        system: true,
-      },
-
-      {
-        _id: 6,
-        text: 'Sounds great. See you then.',
-        createdAt: new Date(),
-        user: {
-          _id: 1,
-            name: 'David',
-            avatar: 'http://placeimg.com/140/140/any',
-        },
-      },
-      {
-        _id: 5,
-        text: 'Good. Was going to grab a bite to eat and see that new movie at 6:30.',
-        createdAt: new Date(),
-        user: {
-          _id: 2,
-            name: 'Alan',
-            avatar: 'http://placeimg.com/140/140/any',
-        },
-      },
-
-      {
-        _id: 4,
-        text: 'Hey. Not much. How have you been?',
-        createdAt: new Date(),
-        user: {
-          _id: 1,
-            name: 'David',
-            avatar: 'http://placeimg.com/140/140/any',
-        },
-      },
-
-      {
-          _id: 3,
-          text: `${name} has entered the chat`,
-          createdAt: new Date(),
-          system: true,
-        },
-        
-        {
-          _id: 2,
-          text: 'Hey, whats up?',
-          createdAt: new Date(),
-          user: {
-            _id: 2,
-              name: 'Alan',
-              avatar: 'http://placeimg.com/140/140/any',
-          },
-        },
-        {
-          _id: 1,
-          text: `Alan has entered the chat`,
-          createdAt: new Date(),
-          system: true,
-        },
-
-      ],
+      messages: messages
     });
   }
 
