@@ -97,7 +97,7 @@ export default class Chat extends React.Component {
   }
 
   // ensure that user's message will be displayed in bubble of a certain color
-  renderBubble(props) {
+  renderBubble = (props) => {
     return (
       <Bubble
         {...props} // inherit props
@@ -120,7 +120,7 @@ export default class Chat extends React.Component {
       <View
         style={{ flex: 1, backgroundColor: backgroundColor}}> 
         <GiftedChat
-          renderBubble={this.renderBubble.bind(this)}
+          renderBubble={this.renderBubble}
           messages={this.state.messages}
           onSend={messages => this.onSend(messages)}
           user={{
