@@ -43,14 +43,17 @@ class Chat extends React.Component {
     const name = this.props.route.params.name; // set name var to name state object sent from Start component
     this.props.navigation.setOptions({ title: name }); // set navigation title to user name
     this.referenceChatMessages = firebase.firestore().collection("messages"); // create reference to Firestore "messages" collection
-    
+    this.stopUpdates();
+  }
+
+  stopUpdates() {
     //create user authentication
-    // "firebase.auth" = call to Firebase Auth service for app
-    // "onAuthStateChanged" = called when user's sign-in status changes
-    this.authUnsubscribe = firebase.auth().onAuthStateChanged((user) => { 
-      if (!user) { // ensure that user is signed in
-        firebase.auth().signInAnonymously();
-      }
+      // "firebase.auth" = call to Firebase Auth service for app
+      // "onAuthStateChanged" = called when user's sign-in status changes
+      this.authUnsubscribe = firebase.auth().onAuthStateChanged((user) => { 
+        if (!user) { // ensure that user is signed in
+          firebase.auth().signInAnonymously();
+        }
       this.setState({ // make user state current user
         uid: user.uid, // set value of current unique id
         user: {
@@ -59,14 +62,13 @@ class Chat extends React.Component {
           avatar: 'https://placeimg.com/140/140/any'
         },
         messages: [],
-        loggedInText: `Logged in as ${name}` // message upon being logged in
+        loggedInText: `Logged in as ${this.state.name}` // message upon being logged in
       });
       this.unsubscribe = this.referenceChatMessages.orderBy("createdAt", "desc").onSnapshot(this.onCollectionUpdate);
     });
   }
 
   componentWillUnmount() { 
-    this.authUnsubscribe(); 
     this.unsubscribe();
   }
 
