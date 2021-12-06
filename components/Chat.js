@@ -2,8 +2,9 @@
 
 import React from 'react';
 import { View, Text, KeyboardAvoidingView } from 'react-native';
-import { Bubble, GiftedChat } from 'react-native-gifted-chat'; // import Bubble component and GiftedChat library
+import { Bubble, GiftedChat, InputToolbar } from 'react-native-gifted-chat'; // import Bubble component and GiftedChat library
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import NetInfo from '@react-native-community/netinfo'; // use to find out if a user is online or not
 
 const firebase = require('firebase');
 require('firebase/firestore'); // import Firestore
@@ -22,7 +23,8 @@ class Chat extends React.Component {
         _id: '',
         name: '',
         avatar: ''
-      }
+      },
+      isConnected: false // set boolean value representing whether user is connected to internet as false
     };
     
     // initialize Firestore chat database with generated configuration object
@@ -56,11 +58,20 @@ class Chat extends React.Component {
     const name = this.props.route.params.name; // set name var to name state object sent from Start component
     this.props.navigation.setOptions({ title: name }); // set navigation title to user name
     this.referenceChatMessages = firebase.firestore().collection("messages"); // create reference to Firestore "messages" collection
-    this.stopUpdates(); // call stopUpdates
-    this.getMessages(); // call getMessages
+    this.getAuth(); // call stopUpdates
+    NetInfo.fetch().then(connection => { // check to see if application is connected to internet
+      if (connection.isConnected) {  // if user is online...
+        this.getAuth(); // authenticate with and load messages from Firebase
+        this.saveMessages(); // save emssages locally with asyncStorage
+        console.log('online');
+      } else { // if user is offline...
+        this.getMessages(); // call getMessages to load and display messages from asyncStorage
+        console.log('offline')
+      }
+    })
   }
 
-  stopUpdates() {
+  getAuth() {
     //create user authentication
       // "firebase.auth" = call to Firebase Auth service for app
       // "onAuthStateChanged" = called when user's sign-in status changes
@@ -134,6 +145,18 @@ class Chat extends React.Component {
     }
   }
 
+
+  async deleteMessages() {
+    try {
+      await AsyncStorage.removeItem('messages'); // use removeItem method to delete stored messages
+      this.setState({
+        messages: []
+      })
+    } catch (error) {
+      console.log(error.message)
+    }
+  }
+
   // ensure that user's message will be displayed in bubble of a certain color
   renderBubble = (props) => {
     return (
@@ -150,6 +173,17 @@ class Chat extends React.Component {
       />
     )
   }
+
+  
+  renderInputToolbar(props) {
+    if (this.state.isConnected) { // render InputToolbar when user online
+      return (
+        <InputToolbar
+          {...props}
+        />
+      )
+    }
+  }
   
   render() { // code for rendering chat UI
     let backgroundColor = this.props.route.params.backgroundColor; // set backgroundColor var to backgroundColor state object sent from Start component
@@ -164,6 +198,7 @@ class Chat extends React.Component {
         <GiftedChat
           renderBubble={this.renderBubble}
           messages={this.state.messages}
+          renderInputToolbar={this.renderInputToolbar.bind(this)}
           onSend={messages => this.onSend(messages)}
           user={{
             _id: this.state.uid,
