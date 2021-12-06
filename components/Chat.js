@@ -3,6 +3,7 @@
 import React from 'react';
 import { View, Text, KeyboardAvoidingView } from 'react-native';
 import { Bubble, GiftedChat } from 'react-native-gifted-chat'; // import Bubble component and GiftedChat library
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 const firebase = require('firebase');
 require('firebase/firestore'); // import Firestore
@@ -39,11 +40,24 @@ class Chat extends React.Component {
     this.referenceChatMessages = null;
   }
 
+  async getMessages() {
+    let messages = '';
+    try {
+      messages = await AsyncStorage.getItem('messages') || []; // use await operator to wait for asyncStorage promise; use getItem method
+      this.setState({                                         // to read to read the messages in storage
+        messages: JSON.parse(messages) // convert saved string into object
+      });
+    } catch (error) {
+      console.log(error.message);
+    }
+  }
+
   componentDidMount() { // called right after component mounts
     const name = this.props.route.params.name; // set name var to name state object sent from Start component
     this.props.navigation.setOptions({ title: name }); // set navigation title to user name
     this.referenceChatMessages = firebase.firestore().collection("messages"); // create reference to Firestore "messages" collection
-    this.stopUpdates();
+    this.stopUpdates(); // call stopUpdates
+    this.getMessages(); // call getMessages
   }
 
   stopUpdates() {
@@ -100,6 +114,7 @@ class Chat extends React.Component {
       messages: GiftedChat.append(previousState.messages, messages), // // append new message to message object
     }));
     this.addMessages(messages) // save a message object to Firestore when a user sends a message
+    this.savemessages(); // save the message objects state into asyncStorage
   }
 
   addMessages(messages) { // store messages in collection
@@ -111,7 +126,13 @@ class Chat extends React.Component {
     });
   }
 
-
+  async saveMessages() { // save message data in storage
+    try {
+      await AsyncStorage.setItem('messages', JSON.stringify(this.state.messages)); // convert message object into a string (for storage)
+    } catch (error) {
+      console.log(error.message);
+    }
+  }
 
   // ensure that user's message will be displayed in bubble of a certain color
   renderBubble = (props) => {
