@@ -2,7 +2,7 @@
 
 import React from 'react';
 import { View, Text, KeyboardAvoidingView } from 'react-native';
-import { Bubble, GiftedChat, InputToolbar } from 'react-native-gifted-chat'; // import Bubble component and GiftedChat library
+import { Bubble, GiftedChat, InputToolbar } from 'react-native-gifted-chat'; // import Bubble component, GiftedChat library, and Input Toolbar
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import NetInfo from '@react-native-community/netinfo'; // use to find out if a user is online or not
 
@@ -18,13 +18,13 @@ class Chat extends React.Component {
       messages: [], // empty array for storing both static and user generated messages
       name: this.props.route.params.name, // set name var to name state object sent from Start component
       uid: 0, // set unique id for each message
-      loggedInText: 'Please wait, you are getting logged in', // message while waiting for message object
+      loggedInText: 'Please wait, you are getting logged in', // message while waiting for message object,
+      isConnected: false,
       user: {
         _id: '',
         name: '',
         avatar: ''
-      },
-      isConnected: false // set boolean value representing whether user is connected to internet as false
+      }
     };
     
     // initialize Firestore chat database with generated configuration object
@@ -39,39 +39,34 @@ class Chat extends React.Component {
         measurementId: "G-85NDTNLC2E"
       });
     }
-    this.referenceChatMessages = null;
-  }
-
-  async getMessages() {
-    let messages = '';
-    try {
-      messages = await AsyncStorage.getItem('messages') || []; // use await operator to wait for asyncStorage promise; use getItem method
-      this.setState({                                         // to read to read the messages in storage
-        messages: JSON.parse(messages) // convert saved string into object
-      });
-    } catch (error) {
-      console.log(error.message);
-    }
+    this.referenceChatMessages = firebase.firestore().collection('messages'); // create reference to Firestore "messages" collection
+    this.refMessageSender = null;
   }
 
   componentDidMount() { // called right after component mounts
     const name = this.props.route.params.name; // set name var to name state object sent from Start component
     this.props.navigation.setOptions({ title: name }); // set navigation title to user name
-    this.referenceChatMessages = firebase.firestore().collection("messages"); // create reference to Firestore "messages" collection
     this.getAuth(); // call stopUpdates
     NetInfo.fetch().then(connection => { // check to see if application is connected to internet
       if (connection.isConnected) {  // if user is online...
+        this.setState({ isConnected: true })
         this.getAuth(); // authenticate with and load messages from Firebase
-        this.saveMessages(); // save emssages locally with asyncStorage
+        this.saveMessages(); // save messages locally with asyncStorage
         console.log('online');
       } else { // if user is offline...
         this.getMessages(); // call getMessages to load and display messages from asyncStorage
-        console.log('offline')
+        console.log('offline');
+        this.setState({ 
+          isConnected: false,
+          loggedInText: 'You are offline'
+        })
       }
     })
-  }
+  }  
 
   getAuth() {
+    this.unsubscribe = this.referenceChatMessages.orderBy("createdAt", "desc").onSnapshot(this.onCollectionUpdate);
+    this.refMessageSender = firebase.firestore().collection('messages').where("uid", "==", this.state.uid);
     //create user authentication
       // "firebase.auth" = call to Firebase Auth service for app
       // "onAuthStateChanged" = called when user's sign-in status changes
@@ -81,15 +76,14 @@ class Chat extends React.Component {
         }
       this.setState({ // make user state current user
         uid: user.uid, // set value of current unique id
+        messages: [],
+        loggedInText: `Logged in as ${this.state.name}`, // message upon being logged in
         user: {
           _id: user.uid,
           name: this.state.name,
           avatar: 'https://placeimg.com/140/140/any'
-        },
-        messages: [],
-        loggedInText: `Logged in as ${this.state.name}` // message upon being logged in
+        }
       });
-      this.unsubscribe = this.referenceChatMessages.orderBy("createdAt", "desc").onSnapshot(this.onCollectionUpdate);
     });
   }
 
@@ -120,14 +114,6 @@ class Chat extends React.Component {
     });
   }
 
-  onSend(messages = []) {
-    this.setState((previousState) => ({ // previousState is reference to state at time of change
-      messages: GiftedChat.append(previousState.messages, messages), // // append new message to message object
-    }));
-    this.addMessages(messages) // save a message object to Firestore when a user sends a message
-    this.savemessages(); // save the message objects state into asyncStorage
-  }
-
   addMessages(messages) { // store messages in collection
     this.referenceChatMessages.add({
       _id: messages[0]._id,
@@ -136,15 +122,6 @@ class Chat extends React.Component {
       user: messages[0].user
     });
   }
-
-  async saveMessages() { // save message data in storage
-    try {
-      await AsyncStorage.setItem('messages', JSON.stringify(this.state.messages)); // convert message object into a string (for storage)
-    } catch (error) {
-      console.log(error.message);
-    }
-  }
-
 
   async deleteMessages() {
     try {
@@ -157,6 +134,36 @@ class Chat extends React.Component {
     }
   }
 
+  async getMessages() {
+    let messages = '';
+    try {
+      messages = (await AsyncStorage.getItem('messages')) || []; // use await operator to wait for asyncStorage promise; use getItem method
+      this.setState({                                         // to read to read the messages in storage
+        messages: JSON.parse(messages) // convert saved string into object
+      });
+    } catch (error) {
+      console.log(error.message);
+    }
+  }
+
+  saveMessages = async () => { // save message data in storage
+    try {
+      await AsyncStorage.setItem('messages', JSON.stringify(this.state.messages)); // convert message object into a string (for storage)
+    } catch (error) {
+      console.log(error.message);
+    }
+  }
+
+  onSend(messages = []) {
+    this.setState((previousState) => ({ // previousState is reference to state at time of change
+      messages: GiftedChat.append(previousState.messages, messages), // // append new message to message object
+    }),
+    () => {
+      this.addMessages(messages) // save a message object to Firestore when a user sends a message
+      this.saveMessages(); // save the message objects state into asyncStorage
+    }
+  );
+}
   // ensure that user's message will be displayed in bubble of a certain color
   renderBubble = (props) => {
     return (
@@ -174,14 +181,14 @@ class Chat extends React.Component {
     )
   }
 
-  
   renderInputToolbar(props) {
-    if (this.state.isConnected) { // render InputToolbar when user online
-      return (
+    if (this.state.isConnected == false) {
+    } else {
+      return(
         <InputToolbar
           {...props}
         />
-      )
+      );
     }
   }
   
@@ -197,8 +204,8 @@ class Chat extends React.Component {
         </Text> 
         <GiftedChat
           renderBubble={this.renderBubble}
-          messages={this.state.messages}
           renderInputToolbar={this.renderInputToolbar.bind(this)}
+          messages={this.state.messages}
           onSend={messages => this.onSend(messages)}
           user={{
             _id: this.state.uid,
