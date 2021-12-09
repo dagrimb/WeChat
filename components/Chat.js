@@ -47,21 +47,7 @@ class Chat extends React.Component {
     const name = this.props.route.params.name; // set name var to name state object sent from Start component
     this.props.navigation.setOptions({ title: name }); // set navigation title to user name
     this.getAuth(); // call stopUpdates
-    NetInfo.fetch().then(connection => { // check to see if application is connected to internet
-      if (connection.isConnected) {  // if user is online...
-        this.setState({ isConnected: true })
-        this.getAuth(); // authenticate with and load messages from Firebase
-        this.saveMessages(); // save messages locally with asyncStorage
-        console.log('online');
-      } else { // if user is offline...
-        this.getMessages(); // call getMessages to load and display messages from asyncStorage
-        console.log('offline');
-        this.setState({ 
-          isConnected: false,
-          loggedInText: 'You are offline'
-        })
-      }
-    })
+    this.fetchNetInfo();
   }  
 
   getAuth() {
@@ -85,6 +71,24 @@ class Chat extends React.Component {
         }
       });
     });
+  }
+
+  fetchNetInfo() {
+    NetInfo.fetch().then(connection => { // check to see if application is connected to internet
+      if (connection.isConnected) {  // if user is online...
+        this.setState({ isConnected: true })
+        this.getAuth(); // authenticate with and load messages from Firebase
+        this.saveMessages(); // save messages locally with asyncStorage
+        console.log('online');
+      } else { // if user is offline...
+        this.getMessages(); // call getMessages to load and display messages from asyncStorage
+        console.log('offline');
+        this.setState({ 
+          isConnected: false,
+          loggedInText: 'You are offline'
+        })
+      }
+    })
   }
 
   componentWillUnmount() { 
