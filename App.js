@@ -3,6 +3,7 @@ import React from 'react';
 import { StyleSheet, Text, View, Button } from 'react-native';
 import Chat from './components/Chat';
 import Start from './components/Start';
+import CustomActions from './components/CustomActions';
 import 'react-native-gesture-handler';
 // import NavigationContainer to manage app's state and link top-level navigator to rest of app
 import { NavigationContainer } from '@react-navigation/native';

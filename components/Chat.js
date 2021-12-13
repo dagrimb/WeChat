@@ -5,6 +5,8 @@ import { View, Text, KeyboardAvoidingView } from 'react-native';
 import { Bubble, GiftedChat, InputToolbar } from 'react-native-gifted-chat'; // import Bubble component, GiftedChat library, and Input Toolbar
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import NetInfo from '@react-native-community/netinfo'; // use to find out if a user is online or not
+import CustomActions from './CustomActions';
+import MapView from 'react-native-maps';
 
 const firebase = require('firebase');
 require('firebase/firestore'); // import Firestore
@@ -24,7 +26,9 @@ class Chat extends React.Component {
         _id: '',
         name: '',
         avatar: ''
-      }
+      },
+      image: null,
+      location: null
     };
     
     // initialize Firestore chat database with generated configuration object
@@ -104,13 +108,15 @@ class Chat extends React.Component {
       let data = doc.data();
       messages.push({
         _id: data._id,
-        text: data.text,
+        text: data.text || "",
         createdAt: data.createdAt.toDate(),
         user: {
           _id: data.user._id,
           name: data.user.name,
           avatar: data.user.avatar
-        }        
+        },
+        image: data.image || null,
+        location: data.location || null        
       });
     });  
     this.setState({
@@ -121,9 +127,11 @@ class Chat extends React.Component {
   addMessages(messages) { // store messages in collection
     this.referenceChatMessages.add({
       _id: messages[0]._id,
-      text: messages[0].text,
+      text: messages[0].text || "",
       createdAt: messages[0].createdAt,
-      user: messages[0].user
+      user: messages[0].user,
+      image: messages[0].image || null,
+      location: messages[0].location || null
     });
   }
 
@@ -196,6 +204,29 @@ class Chat extends React.Component {
     }
   }
   
+// function for creating circle button 
+renderCustomActions = (props) => {
+  return <CustomActions {...props} />;
+};
+
+renderCustomView(props) {
+  const { currentMessage } = props;
+  if (currentMessage.location) { // if message object contains location data...
+    return ( // render a MapView
+      <MapView
+        style={{ width: 150, height: 100, borderRadius: 13, margin: 3}}
+        region={{
+          latitude: currentMessage.location.latitude,
+          longitude: currentMessage.location.longitude,
+          latitudeDelta: 0.0922,
+          longitudeDelta: 0.0421,
+        }}
+      />
+    );
+  }
+  return null;
+}
+
   render() { // code for rendering chat UI
     let backgroundColor = this.props.route.params.backgroundColor; // set backgroundColor var to backgroundColor state object sent from Start component
 
@@ -207,10 +238,13 @@ class Chat extends React.Component {
           {this.state.loggedInText}
         </Text> 
         <GiftedChat
+          isConnected={this.state.isConnected}
           renderBubble={this.renderBubble}
           renderInputToolbar={this.renderInputToolbar.bind(this)}
           messages={this.state.messages}
           onSend={messages => this.onSend(messages)}
+          renderActions={this.renderCustomActions}
+          renderCustomView={this.renderCustomView}
           user={{
             _id: this.state.uid,
             name: this.state.user.name,
