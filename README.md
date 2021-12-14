@@ -28,7 +28,7 @@ Here is what it looks like in the Google Play store:
 
 And after you have installed and opened it:
 
-![image](https://user-images.githubusercontent.com/74441727/146094224-0d54b3ba-f1ae-49e1-afee-55d3a2ad0e7b.png)
+<img src= "https://user-images.githubusercontent.com/74441727/146094224-0d54b3ba-f1ae-49e1-afee-55d3a2ad0e7b.png" width=200/>
 
 
 
