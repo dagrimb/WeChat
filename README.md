@@ -24,7 +24,7 @@ Search for the Expo app in iOS or Android app store and download to your device.
 
 Here is what it looks like in the Google Play store:
 
-![image](https://user-images.githubusercontent.com/74441727/146094107-ba6ac0fc-c4ff-456b-8e15-767b5226da39.png | width=100)
+<img src= "https://user-images.githubusercontent.com/74441727/146094107-ba6ac0fc-c4ff-456b-8e15-767b5226da39.png" width=200/>
 
 And after you have installed and opened it:
 
