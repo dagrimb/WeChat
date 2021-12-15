@@ -97,7 +97,7 @@ For storing messages and user info. Your database will ensure that the messages 
 18) You should now have your personal configuration code for your database. Replace the default credentials in the **initializeApp()** function in Chat.js (lines 35-47) with this configuration code.
 
 
-OTHER DEPEDENCIES/LIBRARIES NEEDED (to be installed in the root project folder via the CLI-- imports are already in place).
+DEPEDENCIES/LIBRARIES NEEDED (to be installed in the root project folder via the CLI-- imports are already in place).
 -React Navigation: **npm install --save react-navigation**
 -The dependencies that React Navigation uses: 
 a) **npm install @react-navigation/native @ react-navigation/stack**
@@ -162,3 +162,19 @@ WHAT YOUR **package.json** SHOULD LOOK LIKE
   "private": true
 }
 
+TO RUN THE PROJECT
+1) Either clone the repo (http://docs.github.com/en/repositories/creating-and-managing-repositories/cloning-a-repository) or download it to a local folder or your computer.
+2) Navigate to your main project directory.
+3) Install libraries and dependencies mentioned under "DEPEDENCIES/LIBRARIES NEEDED" above
+4) start Expo with **npm start** or **expo start** (browser will open a new tab)
+5) Make sure that mobile device and computer are connected to the same WiFi (as mentioned as a requirement above)
+6) Open the Expo app on your mobile device.
+7) Click the button that says "Scan QR Code" (should only have to do this the first time running the project on your device)
+8) Scan the QR code provided in your terminal using the Expo Client for Android.
+
+
+
+![image](https://user-images.githubusercontent.com/74441727/146103055-876a143e-f23a-472e-9f9a-0292fa22b645.png)
+
+
+10) Click run on the Android device/emulator
