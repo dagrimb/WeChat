@@ -50,8 +50,10 @@ class Chat extends React.Component {
   componentDidMount() { // called right after component mounts
     const name = this.props.route.params.name; // set name var to name state object sent from Start component
     this.props.navigation.setOptions({ title: name }); // set navigation title to user name
-    this.getAuth(); // call stopUpdates
-    this.fetchNetInfo();
+    this.getAuth() // call stopUpdates
+      .catch((e) => alert("Could not stop updates"));
+    this.fetchNetInfo()
+      .catch((e) => alert("fetchNetInfo failed"));
   }  
 
   getAuth() {
@@ -81,11 +83,14 @@ class Chat extends React.Component {
     NetInfo.fetch().then(connection => { // check to see if application is connected to internet
       if (connection.isConnected) {  // if user is online...
         this.setState({ isConnected: true })
-        this.getAuth(); // authenticate with and load messages from Firebase
-        this.saveMessages(); // save messages locally with asyncStorage
+        this.getAuth() // authenticate with and load messages from Firebase
+          .catch((e) => alert("Could not stop updates"));
+        this.saveMessages() // save messages locally with asyncStorage
+          .catch((e) => alert("Could not save message"));
         console.log('online');
       } else { // if user is offline...
-        this.getMessages(); // call getMessages to load and display messages from asyncStorage
+        this.getMessages() // call getMessages to load and display messages from asyncStorage
+          .catch((e) => alert("Could not get message"));
         console.log('offline');
         this.setState({ 
           isConnected: false,
@@ -132,7 +137,8 @@ class Chat extends React.Component {
       user: messages[0].user,
       image: messages[0].image || null,
       location: messages[0].location || null
-    });
+    })
+    .catch((e) => alert("Could not add message"));
   }
 
   async deleteMessages() {
@@ -142,6 +148,7 @@ class Chat extends React.Component {
         messages: []
       })
     } catch (error) {
+      alert("DELETE: something went wrong.")
       console.log(error.message)
     }
   }
@@ -154,6 +161,7 @@ class Chat extends React.Component {
         messages: JSON.parse(messages) // convert saved string into object
       });
     } catch (error) {
+      alert("GET: something went wrong.")
       console.log(error.message);
     }
   }
@@ -162,6 +170,7 @@ class Chat extends React.Component {
     try {
       await AsyncStorage.setItem('messages', JSON.stringify(this.state.messages)); // convert message object into a string (for storage)
     } catch (error) {
+      alert("SAVE: something went wrong.")
       console.log(error.message);
     }
   }
@@ -172,7 +181,9 @@ class Chat extends React.Component {
     }),
     () => {
       this.addMessages(messages) // save a message object to Firestore when a user sends a message
-      this.saveMessages(); // save the message objects state into asyncStorage
+      .catch((e) => alert("Could not add message"));
+      this.saveMessages() // save the message objects state into asyncStorage
+      .catch((e) => alert("Could not save message"));
     }
   );
 }
@@ -194,8 +205,7 @@ class Chat extends React.Component {
   }
 
   renderInputToolbar(props) {
-    if (this.state.isConnected == false) {
-    } else {
+    if (this.state.isConnected) {
       return(
         <InputToolbar
           {...props}
