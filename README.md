@@ -175,8 +175,5 @@ TO RUN THE PROJECT
 6) Open the Expo app on your mobile device.
 7) Click the button that says "Scan QR Code" (should only have to do this the first time running the project on your device)
 8) Scan the QR code provided in your terminal using the Expo Client for Android.
-
-![image](https://user-images.githubusercontent.com/74441727/146103055-876a143e-f23a-472e-9f9a-0292fa22b645.png)
-
-10) Click run on the Android device/emulator
+9) Click run on the Android device/emulator
 
