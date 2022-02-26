@@ -4,8 +4,6 @@ WeChat is a native, mobile chat application to be used on both Android and iOS d
 
 <img width="1079" alt="wechat_img" src="https://user-images.githubusercontent.com/74441727/155821311-21e5cfd4-c15d-450b-88d5-c9e26dff0f0f.png">
 
-<img src="https://user-images.githubusercontent.com/74441727/155259064-c86205e2-e597-43d6-997d-675f9b3d8d89.png" width=600>
-
 TECHNOLOGIES USED
 * React Native
 * Expo (for developing/testing React Native apps)
